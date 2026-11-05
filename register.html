@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account | Pizza Ordering</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Outfit', 'system-ui', 'sans-serif'] },
+          colors: { brand: { DEFAULT: '#ff4d0a', dark: '#e03e00' } }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Full-screen background image.
+       Replace the url() with a local file (e.g. images/pizza-bg.jpg) if you prefer. */
+    .bg-hero {
+      background-color: #3a1200; /* fallback while image loads */
+      background-image:
+        linear-gradient(rgba(20, 8, 0, .55), rgba(20, 8, 0, .55)),
+        url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    /* Glass card */
+    .glass {
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    /* Glass inputs */
+    .glass-input {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #fff;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .glass-input::placeholder { color: rgba(255, 255, 255, 0.65); }
+    .glass-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #ff7a45;
+      box-shadow: 0 0 0 3px rgba(255, 77, 10, 0.35);
+    }
+    .glass-input.invalid { border-color: #ff6b6b; }
+
+    /* Browser autofill keeps the glass look */
+    .glass-input:-webkit-autofill {
+      -webkit-text-fill-color: #fff;
+      transition: background-color 9999s ease-in-out 0s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-hero min-h-screen font-sans text-white">
+
+  <main class="min-h-screen flex items-center justify-center px-4 py-10">
+    <section class="glass w-full max-w-md rounded-3xl p-8 sm:p-10">
+
+      <header class="text-center mb-8">
+        <h1 class="text-3xl font-semibold tracking-tight">Create account</h1>
+        <p class="mt-2 text-sm text-white/80">Fresh &amp; Delicious. Your favourite pizza is waiting for you!</p>
+      </header>
+
+      <form id="registerForm" novalidate class="space-y-4">
+
+        <div>
+          <label for="name" class="sr-only">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Name"
+                 class="glass-input w-full rounded-xl px-4 py-3.5" />
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="name"></p>
+        </div>
+
+        <div>
+          <label for="email" class="sr-only">E-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="E-mail"
+                 class="glass-input w-full rounded-xl px-4 py-3.5" />
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="email"></p>
+        </div>
+
+        <div>
+          <label for="phone" class="sr-only">Phone number</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="numeric" placeholder="Phone number"
+                 class="glass-input w-full rounded-xl px-4 py-3.5" />
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="phone"></p>
+        </div>
+
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <div class="relative">
+            <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Password"
+                   class="glass-input w-full rounded-xl px-4 py-3.5 pr-16" />
+            <button type="button" data-toggle="password"
+                    class="absolute inset-y-0 right-3 my-auto h-8 px-2 text-xs font-medium text-white/80 hover:text-white rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+              Show
+            </button>
+          </div>
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="password"></p>
+        </div>
+
+        <div>
+          <label for="confirm" class="sr-only">Confirm password</label>
+          <div class="relative">
+            <input id="confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Confirm password"
+                   class="glass-input w-full rounded-xl px-4 py-3.5 pr-16" />
+            <button type="button" data-toggle="confirm"
+                    class="absolute inset-y-0 right-3 my-auto h-8 px-2 text-xs font-medium text-white/80 hover:text-white rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+              Show
+            </button>
+          </div>
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="confirm"></p>
+        </div>
+
+        <div>
+          <label class="glass-input flex items-center gap-3 rounded-xl px-4 py-3.5 cursor-pointer">
+            <input id="terms" name="terms" type="checkbox" class="h-4 w-4 rounded accent-brand" />
+            <span class="text-sm text-white/90">I agree terms &amp; conditions</span>
+          </label>
+          <p class="error mt-1 hidden text-xs text-red-200" data-for="terms"></p>
+        </div>
+
+        <button type="submit"
+                class="w-full rounded-xl bg-brand hover:bg-brand-dark active:scale-[.99] transition py-3.5 text-lg font-medium shadow-lg shadow-orange-900/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+          Sign up
+        </button>
+
+        <p id="formMessage" role="status" class="hidden text-center text-sm"></p>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-white/85">
+        Already have an account?
+        <a href="login.html" class="font-medium text-orange-300 hover:text-orange-200 underline-offset-4 hover:underline">Sign in</a> here
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const message = document.getElementById('formMessage');
+
+    // Show / hide password
+    document.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.toggle);
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Hide' : 'Show';
+      });
+    });
+
+    function setError(id, text) {
+      const el = document.getElementById(id);
+      const msg = form.querySelector(`.error[data-for="${id}"]`);
+      if (text) {
+        msg.textContent = text;
+        msg.classList.remove('hidden');
+        el.classList.add('invalid');
+      } else {
+        msg.classList.add('hidden');
+        el.classList.remove('invalid');
+      }
+    }
+
+    function validate() {
+      const v = id => document.getElementById(id).value.trim();
+      let ok = true;
+
+      const checks = {
+        name:     v('name').length >= 2 ? '' : 'Enter your name.',
+        email:    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email')) ? '' : 'Enter a valid e-mail address.',
+        phone:    /^\d{10}$/.test(v('phone').replace(/[\s-]/g, '')) ? '' : 'Enter a 10-digit phone number.',
+        password: document.getElementById('password').value.length >= 6 ? '' : 'Use at least 6 characters.',
+        confirm:  document.getElementById('confirm').value === document.getElementById('password').value
+                    && document.getElementById('confirm').value ? '' : 'Passwords do not match.',
+        terms:    document.getElementById('terms').checked ? '' : 'Accept the terms & conditions to continue.'
+      };
+
+      for (const [id, text] of Object.entries(checks)) {
+        setError(id, text);
+        if (text) ok = false;
+      }
+      return ok;
+    }
+
+    // Clear an error as soon as the person edits that field
+    form.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => setError(input.id, ''));
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      message.classList.add('hidden');
+      if (!validate()) return;
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+      if (users.some(u => u.email === email)) {
+        setError('email', 'An account with this e-mail already exists.');
+        return;
+      }
+
+      users.push({
+        name: document.getElementById('name').value.trim(),
+        email,
+        phone: document.getElementById('phone').value.replace(/[\s-]/g, ''),
+        password: document.getElementById('password').value // demo only: never store plain passwords in a real app
+      });
+      localStorage.setItem('users', JSON.stringify(users));
+
+      message.textContent = 'Account created. Taking you to sign in…';
+      message.className = 'text-center text-sm text-green-200';
+      form.reset();
+      setTimeout(() => (window.location.href = 'login.html'), 1200);
+    });
+  </script>
+</body>
+</html>

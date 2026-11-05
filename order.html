@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History - Pizza Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dom: "#e31837"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- HEADER -->
+  <header class="bg-white shadow-sm px-4 py-5">
+    <div class="max-w-4xl mx-auto flex items-center gap-4">
+      <button onclick="goBack()"
+        class="text-2xl font-bold"
+        aria-label="Go back">
+        &larr;
+      </button>
+
+      <div>
+        <h1 class="text-2xl font-bold">Order History</h1>
+        <p class="text-sm text-gray-500">
+          View your previously ordered pizzas
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ORDER HISTORY -->
+  <main class="max-w-4xl mx-auto px-4 py-6">
+
+    <a href="index.html"><div class="flex justify-between items-center mb-5">
+      <h2 class="text-lg font-bold">My Orders</h2></a>
+
+      <button onclick="renderOrders()"
+        class="border border-dom text-dom rounded-lg px-4 py-2">
+        Refresh
+      </button>
+    </div>
+
+    <div id="ordersContainer"></div>
+
+    <div class="text-center mt-8">
+      <a href="menu.html"
+        class="inline-block bg-dom text-white font-semibold rounded-lg px-6 py-3">
+        Order More Pizzas
+      </a>
+    </div>
+
+  </main>
+
+  <script>
+    // ====================================
+    // READ DATA FROM LOCAL STORAGE
+    // ====================================
+
+    function readStorage(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function money(amount) {
+      return "₹" + (Number(amount) || 0).toFixed(2);
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    // ====================================
+    // BACK BUTTON
+    // ====================================
+
+    function goBack() {
+      if (history.length > 1) {
+        history.back();
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    // ====================================
+    // DISPLAY ALL PREVIOUS ORDERS
+    // ====================================
+
+    function renderOrders() {
+      const container = document.getElementById("ordersContainer");
+
+      const orders = readStorage("orders", []);
+      const orderItems = readStorage("order_items", []);
+
+      if (!Array.isArray(orders) || orders.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <div class="text-6xl mb-4">🍕</div>
+
+            <h2 class="text-xl font-bold">
+              No orders yet
+            </h2>
+
+            <p class="text-gray-500 mt-2">
+              Once you confirm an order, it will appear here.
+            </p>
+
+            <a href="menu.html"
+              class="inline-block mt-5 bg-dom text-white rounded-lg px-6 py-3 font-semibold">
+              Explore Menu
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Show latest order first.
+      const sortedOrders = [...orders].sort((a, b) => {
+        const dateA = new Date(a.order_date || 0).getTime();
+        const dateB = new Date(b.order_date || 0).getTime();
+
+        return dateB - dateA;
+      });
+
+      container.innerHTML = sortedOrders.map(order => {
+        const items = Array.isArray(orderItems)
+          ? orderItems.filter(item =>
+              String(item.order_id) === String(order.order_id)
+            )
+          : [];
+
+        const parsedDate = new Date(order.order_date);
+
+        const formattedDate =
+          order.order_date && !Number.isNaN(parsedDate.getTime())
+            ? parsedDate.toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+              })
+            : "Date unavailable";
+
+        return `
+          <article class="bg-white rounded-2xl shadow-sm p-5 mb-5">
+
+            <!-- ORDER INFORMATION -->
+            <div class="flex flex-col sm:flex-row
+                        sm:justify-between gap-3 border-b pb-4">
+
+              <div>
+                <p class="text-sm text-gray-500">Order ID</p>
+
+                <h3 class="font-bold text-lg break-all">
+                  ${escapeHTML(order.order_id || "Unavailable")}
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2">
+                  ${escapeHTML(formattedDate)}
+                </p>
+              </div>
+
+              <div class="sm:text-right">
+                <span class="inline-block bg-green-100 text-green-700
+                             rounded-full px-3 py-1 text-sm font-semibold">
+                  ${escapeHTML(order.status || "Confirmed")}
+                </span>
+
+                <p class="text-xl font-bold mt-2">
+                  ${money(order.total_amount)}
+                </p>
+              </div>
+            </div>
+
+            <!-- ORDERED PRODUCTS -->
+            <div class="py-4">
+              <h4 class="font-bold mb-3">Ordered Items</h4>
+
+              ${
+                items.length > 0
+                  ? items.map(item => `
+                    <div class="flex justify-between items-start
+                                gap-4 py-3 border-b border-dashed">
+
+                      <div class="min-w-0">
+                        <p class="font-semibold break-words">
+                          🍕 ${escapeHTML(item.product_name || "Pizza")}
+                        </p>
+
+                        <p class="text-sm text-gray-500 mt-1">
+                          Quantity: ${Number(item.quantity) || 0}
+                          × ${money(item.unit_price)}
+                        </p>
+                      </div>
+
+                      <p class="font-semibold whitespace-nowrap">
+                        ${money(item.subtotal)}
+                      </p>
+                    </div>
+                  `).join("")
+                  : `
+                    <p class="text-gray-500 text-sm">
+                      Product details are unavailable for this order.
+                    </p>
+                  `
+              }
+            </div>
+
+            <!-- ORDER TOTAL -->
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-gray-500">
+                ${items.length} product record(s)
+              </span>
+
+              <div class="text-right">
+                <p class="text-sm text-gray-500">Order Total</p>
+                <p class="text-lg font-bold">
+                  ${money(order.total_amount)}
+                </p>
+              </div>
+            </div>
+
+          </article>
+        `;
+      }).join("");
+    }
+
+    // Initial display
+    renderOrders();
+
+    // Update if another tab changes local storage.
+    window.addEventListener("storage", event => {
+      if (event.key === "orders" || event.key === "order_items") {
+        renderOrders();
+      }
+    });
+  </script>
+
+</body>
+</html>
